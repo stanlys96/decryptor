@@ -124,15 +124,38 @@ export default function HomePage() {
             <button
               onClick={async (e) => {
                 e.preventDefault();
+                if (!textValue.trim() || !keyValue.trim()) {
+                  return Swal.fire(
+                    "Fill fields...",
+                    "Please fill all the fields!",
+                    "warning"
+                  );
+                }
                 let val: any = null;
                 if (dropdownValue?.id === 1) {
                   val = CryptoJS.AES.encrypt(textValue, keyValue, {
                     format: JsonFormatter,
                   });
                   setFinalValue(val.toString());
+                  Toast.fire({
+                    icon: "success",
+                    title: "Successfully encrypted!",
+                  });
                 } else {
                   val = CryptoJS.AES.decrypt(textValue, keyValue, {
                     format: JsonFormatter,
+                  });
+                  if (!val.toString()) {
+                    setFinalValue("");
+                    return Swal.fire(
+                      "Wrong key!",
+                      "Please check your key.",
+                      "error"
+                    );
+                  }
+                  Toast.fire({
+                    icon: "success",
+                    title: "Successfully decrypted!",
                   });
                   setFinalValue(val.toString(CryptoJS.enc.Utf8));
                 }

@@ -11,6 +11,27 @@ export const dropdownData = [
   },
 ];
 
+export const refactorJsonData = (str: string): string => {
+  let result = "";
+  let quoteCount = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === '"') {
+      quoteCount++;
+    }
+    result += str[i];
+    if (
+      quoteCount !== 0 &&
+      quoteCount % 4 === 0 &&
+      str[i] === '"' &&
+      str[i + 1] !== "}" &&
+      str[i + 1] !== ","
+    ) {
+      result += ",";
+    }
+  }
+  return result;
+};
+
 export const JsonFormatter = {
   stringify: function (cipherParams: any) {
     // create json object with ciphertext
@@ -29,7 +50,9 @@ export const JsonFormatter = {
   },
   parse: function (jsonStr: any) {
     // parse json string
-    var jsonObj = JSON.parse(jsonStr);
+    const finalJson = refactorJsonData(jsonStr);
+    console.log(finalJson, "<<<");
+    var jsonObj = JSON.parse(finalJson);
     // extract ciphertext from json object, and create cipher params object
     var cipherParams = CryptoJS.lib.CipherParams.create({
       ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct),
