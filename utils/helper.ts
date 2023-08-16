@@ -50,20 +50,24 @@ export const JsonFormatter = {
   },
   parse: function (jsonStr: any) {
     // parse json string
-    const finalJson = refactorJsonData(jsonStr);
-    console.log(finalJson, "<<<");
-    var jsonObj = JSON.parse(finalJson);
-    // extract ciphertext from json object, and create cipher params object
-    var cipherParams = CryptoJS.lib.CipherParams.create({
-      ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct),
-    });
-    // optionally extract iv or salt
-    if (jsonObj.iv) {
-      cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
+    try {
+      const finalJson = refactorJsonData(jsonStr);
+      console.log(finalJson, "<<<");
+      var jsonObj = JSON.parse(finalJson);
+      // extract ciphertext from json object, and create cipher params object
+      var cipherParams = CryptoJS.lib.CipherParams.create({
+        ciphertext: CryptoJS.enc.Base64.parse(jsonObj.ct),
+      });
+      // optionally extract iv or salt
+      if (jsonObj.iv) {
+        cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv);
+      }
+      if (jsonObj.s) {
+        cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
+      }
+      return cipherParams;
+    } catch (e) {
+      return jsonStr;
     }
-    if (jsonObj.s) {
-      cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s);
-    }
-    return cipherParams;
   },
 };
